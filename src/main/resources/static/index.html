@@ -6,17 +6,86 @@
 	<link rel='stylesheet' href='font-awesome-4.7.0/css/font-awesome.min.css' type='text/css' media='all' />
 	<link rel="stylesheet" href="https://cdn.bootcss.com/animate.css/3.7.0/animate.min.css">
 	<style>
-		*{padding:0px;margin:0px;}
+		* {
+			padding: 0px;
+			margin: 0px;
+		}
 
-		body{/*background-image:url('3.jpg');*/background:rgb(41,52,65);}
-		.panel{margin:260px auto;width:600px;text-align:center;}
-		.btn{ transition:all .3s; border:1px solid #00b9ff;text-decoration: none;color: white;background: #00b9ff;display: inline-block;width: 140px;height: 40px;line-height: 40px;margin-left:20px;}
-		.desc{line-height: 100px;color: white;font-size: 34px;font-weight: 400;}
-		.btn:hover{border:1px solid #0099FF;background: #0099FF;}
-		.progressBar{width: 100%;background: #03A9F4;height: 4px;border-radius: 1px;position:fixed;top:0px;left:0px;}
-		.container{height: 400px;width:500px;margin:40px;float:left;}
-		.analysePanel{width:1200px; margin:0 auto;background-color: rgb(41,52,65);display: none;}
-		.dialog{font-weight: 100;line-height: 50px;font-size: 16px;position: absolute;color: white; width: 30%;top: 50px;background: rgba(0,0,0,0.3);height: 50px;display: none;left: 35%;}
+		body {
+			/*background-image:url('3.jpg');*/
+			background: rgb(41,52,65);
+		}
+
+		.panel {
+			margin: 260px auto;
+			width: 600px;
+			text-align: center;
+		}
+
+		.btn {
+			transition: all .3s;
+			border: 1px solid #00b9ff;
+			text-decoration: none;
+			color: white;
+			background: #00b9ff;
+			display: inline-block;
+			width: 140px;
+			height: 40px;
+			line-height: 40px;
+			margin-left: 20px;
+		}
+
+		.desc {
+			line-height: 100px;
+			color: white;
+			font-size: 34px;
+			font-weight: 400;
+		}
+
+		.btn:hover {
+			border: 1px solid #0099FF;
+			background: #0099FF;
+		}
+
+		.progressBar {
+			width: 100%;
+			background: #03A9F4;
+			height: 4px;
+			border-radius: 1px;
+			position: fixed;
+			top: 0px;
+			left: 0px;
+		}
+
+		.container {
+			height: 400px;
+			width: 500px;
+			margin: 40px;
+			float: left;
+		}
+
+		.analysePanel {
+			width: 1200px;
+			margin: 0 auto;
+			background-color: rgb(41,52,65);
+			display: none;
+		}
+
+		.dialog {
+			font-weight: 100;
+			line-height: 50px;
+			font-size: 16px;
+			position: absolute;
+			color: white;
+			width: 30%;
+			top: 50px;
+			background: rgba(0,0,0,0.3);
+			height: 50px;
+			display: none;
+			left: 35%;
+		}
+
+		*{padding:0px;margin:0px;}
 	</style>
 </head>
 
@@ -175,23 +244,26 @@
 						$(".panel").fadeOut(200);
 						$(".analysePanel").fadeIn(200);
 						let frameData = findByName(data,"frame").data;
-						initLine($(".pose_Tx").get(0),frameData,findByName(data,"pose_Tx").data,"pose_Tx");
-						initLine($(".pose_Tx_diff").get(0),frameData,findByName(data,"pose_Tx_diff").data,"difference of pose_Tx");
-						initLine($(".pose_Ty").get(0),frameData,findByName(data,"pose_Ty").data,"pose_Ty");
-						initLine($(".pose_Ty_diff").get(0),frameData,findByName(data,"pose_Ty_diff").data,"difference of pose_Ty");
-						initLine($(".pose_Tz").get(0),frameData,findByName(data,"pose_Tz").data,"pose_Tz");
-						initLine($(".pose_Tz_diff").get(0),frameData,findByName(data,"pose_Tz_diff").data,"difference of pose_Tz");
-						initLine($(".pose_Rx").get(0),frameData,findByName(data,"pose_Rx").data,"pose_Rx");
-						initLine($(".pose_Rx_diff").get(0),frameData,findByName(data,"pose_Rx_diff").data,"difference of pose_Rx");
-						initLine($(".pose_Ry").get(0),frameData,findByName(data,"pose_Ry").data,"pose_Ry");
-						initLine($(".pose_Ry_diff").get(0),frameData,findByName(data,"pose_Ry_diff").data,"difference of pose_Ry");
-						initLine($(".pose_Rz").get(0),frameData,findByName(data,"pose_Rz").data,"pose_Rz");
-						initLine($(".pose_Rz_diff").get(0),frameData,findByName(data,"pose_Rz_diff").data,"difference of pose_Rz");
-						initPie($(".AU12_c").get(0),pieData(findByName(data,"AU12_c").data,"AU12_c"),["AU12_c=1","AU12_c=0"],"AU12_c");
-						initPie($(".AU14_c").get(0),pieData(findByName(data,"AU14_c").data,"AU14_c"),["AU14_c=1","AU14_c=0"],"AU14_c");
-						initPie($(".AU15_c").get(0),pieData(findByName(data,"AU15_c").data,"AU15_c"),["AU15_c=1","AU15_c=0"],"AU15_c");
-						initPie($(".InvalidateCount").get(0),[{name:"valid",value:data.columns[0].data.length - data.invalidateCount},{name:"invalid",value:data.invalidateCount}]
-								,["valid","invalid"],"Invalid Frame");
+						initLine($(".pose_Tx").get(0), frameData, findByName(data, "pose_Tx").data, "pose_Tx");
+						initLine($(".pose_Tx_diff").get(0), frameData, findByName(data, "pose_Tx_diff").data, "difference of pose_Tx");
+						initLine($(".pose_Ty").get(0), frameData, findByName(data, "pose_Ty").data, "pose_Ty");
+						initLine($(".pose_Ty_diff").get(0), frameData, findByName(data, "pose_Ty_diff").data, "difference of pose_Ty");
+						initLine($(".pose_Tz").get(0), frameData, findByName(data, "pose_Tz").data, "pose_Tz");
+						initLine($(".pose_Tz_diff").get(0), frameData, findByName(data, "pose_Tz_diff").data, "difference of pose_Tz");
+						initLine($(".pose_Rx").get(0), frameData, findByName(data, "pose_Rx").data, "pose_Rx");
+						initLine($(".pose_Rx_diff").get(0), frameData, findByName(data, "pose_Rx_diff").data, "difference of pose_Rx");
+						initLine($(".pose_Ry").get(0), frameData, findByName(data, "pose_Ry").data, "pose_Ry");
+						initLine($(".pose_Ry_diff").get(0), frameData, findByName(data, "pose_Ry_diff").data, "difference of pose_Ry");
+						initLine($(".pose_Rz").get(0), frameData, findByName(data, "pose_Rz").data, "pose_Rz");
+						initLine($(".pose_Rz_diff").get(0), frameData, findByName(data, "pose_Rz_diff").data, "difference of pose_Rz");
+						initPie($(".AU12_c").get(0), pieData(findByName(data, "AU12_c").data, "AU12_c"), ["AU12_c=1", "AU12_c=0"], "AU12_c");
+						initPie($(".AU14_c").get(0), pieData(findByName(data, "AU14_c").data, "AU14_c"), ["AU14_c=1", "AU14_c=0"], "AU14_c");
+						initPie($(".AU15_c").get(0), pieData(findByName(data, "AU15_c").data, "AU15_c"), ["AU15_c=1", "AU15_c=0"], "AU15_c");
+						initPie($(".InvalidateCount").get(0), [{
+									name: "valid",
+									value: data.columns[0].data.length - data.invalidateCount
+								}, {name: "invalid", value: data.invalidateCount}]
+								, ["valid", "invalid"], "Invalid Frame");
 					},
 					error: function(e){
 						$(".dialog").show(0);

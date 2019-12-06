@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 @RestController
-public class CSVController {
+public class CSVController extends BaseController{
     @ResponseBody
     @RequestMapping("/statistic")
     public Object statistic(@RequestParam("file") MultipartFile file) throws IOException {
