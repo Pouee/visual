@@ -1,0 +1,220 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>OpenFace Data Virtualization</title>
+	<link rel='stylesheet' href='font-awesome-4.7.0/css/font-awesome.min.css' type='text/css' media='all' />
+	<link rel="stylesheet" href="https://cdn.bootcss.com/animate.css/3.7.0/animate.min.css">
+	<style>
+		*{padding:0px;margin:0px;}
+
+		body{/*background-image:url('3.jpg');*/background:rgb(41,52,65);}
+		.panel{margin:260px auto;width:600px;text-align:center;}
+		.btn{ transition:all .3s; border:1px solid #00b9ff;text-decoration: none;color: white;background: #00b9ff;display: inline-block;width: 140px;height: 40px;line-height: 40px;margin-left:20px;}
+		.desc{line-height: 100px;color: white;font-size: 34px;font-weight: 400;}
+		.btn:hover{border:1px solid #0099FF;background: #0099FF;}
+		.progressBar{width: 100%;background: #03A9F4;height: 4px;border-radius: 1px;position:fixed;top:0px;left:0px;}
+		.container{height: 400px;width:500px;margin:40px;float:left;}
+		.analysePanel{width:1200px; margin:0 auto;background-color: rgb(41,52,65);display: none;}
+		.dialog{font-weight: 100;line-height: 50px;font-size: 16px;position: absolute;color: white; width: 30%;top: 50px;background: rgba(0,0,0,0.3);height: 50px;display: none;left: 35%;}
+	</style>
+</head>
+
+<body>
+	<div class="progressBar"></div>
+	
+
+	<div class="analysePanel">
+		<div class="container pose_Tx" ></div>
+		<div class="container pose_Tx_diff" ></div>
+		<div class="container pose_Ty" ></div>
+		<div class="container pose_Ty_diff" ></div>
+		<div class="container pose_Tz" ></div>
+		<div class="container pose_Tz_diff" ></div>
+		<div class="container pose_Rx" ></div>
+		<div class="container pose_Rx_diff" ></div>
+		<div class="container pose_Ry" ></div>
+		<div class="container pose_Ry_diff" ></div>
+		<div class="container pose_Rz" ></div>
+		<div class="container pose_Rz_diff" ></div>
+		<div class="container AU12_c" ></div>
+		<div class="container AU14_c" ></div>
+		<div class="container AU15_c" ></div>
+		<div class="container InvalidateCount" ></div>
+	</div>
+
+
+	<div class="panel">
+		<span class="dialog"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> 网络异常，请稍后重试</span>
+		<h3 class="desc">每个人的情绪都值得关注</h3>
+		<input id="file" style="display:none;" type="file"/>
+		<a class="btn" id="upload" href="javascript:void(0);"><i class="fa fa-area-chart" aria-hidden="true"></i> 数据分析</a>
+		<a class="btn" id="contact" href="javascript:void(0);"><i class="fa fa-address-card" aria-hidden="true"></i> 联系我们</a>
+	</div>
+
+	<script type="text/javascript" src="echarts.min.js"></script>
+	<script type="text/javascript" src="jquery.js"></script>
+	<script type="text/javascript" src="chalk.js"></script>
+	<script>
+		function animateCss(element, animationName,times, callback) {
+			const nodes = document.querySelectorAll(element)
+			nodes.forEach((node => {
+				if(times) node.style.setProperty('animation-duration', times, 'important');
+				node.classList.add('animated', animationName)
+				function handleAnimationEnd() {
+					node.classList.remove('animated', animationName)
+					node.removeEventListener('animationend', handleAnimationEnd)
+
+					if (typeof callback === 'function') callback()
+				}
+				node.addEventListener('animationend', handleAnimationEnd)
+			}))
+		}
+		function findByName(data,name){
+			for(let i = 0 ; i < data.columns.length ;++i){
+				if(data.columns[i].name == name) return data.columns[i] ;
+			}
+			return null ;
+		}
+		function initPie(dom, xdata,ldata, name){
+			let myChart = echarts.init(dom,"chalk");
+			let option = {
+				title : {
+					text: name,
+					x:'center'
+				},
+				tooltip : {
+					trigger: 'item',
+					formatter: "{a} <br/>{b} : {c} ({d}%)"
+				},
+				legend: {
+					orient: 'vertical',
+					left: 'left',
+					data: ldata
+				},
+				series : [
+					{
+						name: '数据分布',
+						type: 'pie',
+						radius : '55%',
+						data: xdata
+					}
+				]
+			};
+			myChart.setOption(option, true);
+		}
+		function pieData(data,name){
+			let cnt = 0 ;
+			for(let i = 0 ; i < data.length ;++i){
+				cnt += data[i] ;
+			}
+			return [{ value:cnt,name:name+"=1" },{ value:data.length-cnt,name:name+"=0" }] ;
+		}
+		function initLine(dom,xdata,ydata,name){
+			let myChart = echarts.init(dom,"chalk");
+			let option = {
+				dataZoom: [{
+					type: 'inside',
+					start: 0,
+					end: 1000,
+					show:true
+				},{
+					type: 'slider',//图表下方的伸缩条
+					show : true,  //是否显示
+				}],
+				title: {
+					text: name,
+					x: 'center'
+				},
+				xAxis: {
+					name:"帧",
+					type: 'category',
+					data: xdata
+				},
+				yAxis: {
+					name: "数值",
+					type: 'value'
+				},
+				series: [{
+					data: ydata,
+					type: "line"
+				}]
+			};
+			myChart.setOption(option, true);
+		}
+		$(function(){
+			// 注册事件
+			let onUploading = false ;
+			$("#upload").click(function(){
+				$("#file").click();
+			});
+			$("#file").change(function(){
+				onUploading = true ;
+				$("#upload").html("<i class='fa fa-question-circle' aria-hidden='true'></i> 遇到问题");
+				$(".desc").html("请稍等，我们正在处理您的数据");
+				let files=document.getElementById("file").files;
+				let form = new FormData();
+				for(var i=0;i<files.length;i++)form.append("file",files[i]);
+				$.ajax({
+					url: 'statistic',  
+					type: 'POST',
+					dataType: 'json',
+					xhr: function() {  
+						myXhr = $.ajaxSettings.xhr();
+						if(myXhr.upload){ 
+							myXhr.upload.addEventListener('progress',function(e){
+								if(e.lengthComputable){
+									$(".progressBar").css({"width":((e.loaded/e.total)*100) +"%"});
+								}
+							}, false); 
+						}
+						return myXhr;
+					},
+					success: function(data){
+						onUploading = false ;
+						$(".panel").fadeOut(200);
+						$(".analysePanel").fadeIn(200);
+						let frameData = findByName(data,"frame").data;
+						initLine($(".pose_Tx").get(0),frameData,findByName(data,"pose_Tx").data,"pose_Tx");
+						initLine($(".pose_Tx_diff").get(0),frameData,findByName(data,"pose_Tx_diff").data,"difference of pose_Tx");
+						initLine($(".pose_Ty").get(0),frameData,findByName(data,"pose_Ty").data,"pose_Ty");
+						initLine($(".pose_Ty_diff").get(0),frameData,findByName(data,"pose_Ty_diff").data,"difference of pose_Ty");
+						initLine($(".pose_Tz").get(0),frameData,findByName(data,"pose_Tz").data,"pose_Tz");
+						initLine($(".pose_Tz_diff").get(0),frameData,findByName(data,"pose_Tz_diff").data,"difference of pose_Tz");
+						initLine($(".pose_Rx").get(0),frameData,findByName(data,"pose_Rx").data,"pose_Rx");
+						initLine($(".pose_Rx_diff").get(0),frameData,findByName(data,"pose_Rx_diff").data,"difference of pose_Rx");
+						initLine($(".pose_Ry").get(0),frameData,findByName(data,"pose_Ry").data,"pose_Ry");
+						initLine($(".pose_Ry_diff").get(0),frameData,findByName(data,"pose_Ry_diff").data,"difference of pose_Ry");
+						initLine($(".pose_Rz").get(0),frameData,findByName(data,"pose_Rz").data,"pose_Rz");
+						initLine($(".pose_Rz_diff").get(0),frameData,findByName(data,"pose_Rz_diff").data,"difference of pose_Rz");
+						initPie($(".AU12_c").get(0),pieData(findByName(data,"AU12_c").data,"AU12_c"),["AU12_c=1","AU12_c=0"],"AU12_c");
+						initPie($(".AU14_c").get(0),pieData(findByName(data,"AU14_c").data,"AU14_c"),["AU14_c=1","AU14_c=0"],"AU14_c");
+						initPie($(".AU15_c").get(0),pieData(findByName(data,"AU15_c").data,"AU15_c"),["AU15_c=1","AU15_c=0"],"AU15_c");
+						initPie($(".InvalidateCount").get(0),[{name:"valid",value:data.columns[0].data.length - data.invalidateCount},{name:"invalid",value:data.invalidateCount}]
+								,["valid","invalid"],"Invalid Frame");
+					},
+					error: function(e){
+						$(".dialog").show(0);
+						animateCss('.dialog', 'bounceInDown','300ms',()=>{
+							setTimeout(()=>{
+								animateCss('.dialog', 'bounceOutLeft','200ms',()=>{$(".dialog").hide(0)})
+							},500);
+							$(".desc").html("请重新上传你的数据");
+							onUploading = false ;
+						});
+
+					},
+					// Form数据
+					data: form,
+					cache: false,
+					contentType: false,
+					processData: false
+				});
+			});
+			
+		});
+		(function(){
+		})();
+	</script>
+</body>
+</html>
