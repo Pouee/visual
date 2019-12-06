@@ -1,6 +1,6 @@
 # 基于OpenFace的数据可视化程序
 
-基于OpenFace提取的CSV数据进行数据可视化，差分，百分比显示，并提供相应CSV文件操作方法
+基于OpenFace提取的CSV数据进行数据可视化，差分，百分比显示，数据过滤等，并提供相应CSV文件操作方法
 
 ![avatar](show.png)
 
